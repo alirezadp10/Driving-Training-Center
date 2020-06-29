@@ -54,7 +54,7 @@ namespace Driving_Training_Center.Controllers
             {
                 response[license.name] = license.cost;
             };
-            return Ok(licenses);
+            return Ok(response);
         }
 
         // GET: api/Licenses
@@ -118,6 +118,7 @@ namespace Driving_Training_Center.Controllers
 
             var license = new License
             {
+                id = request.id,
                 name = request.name,
                 cost = request.cost,
                 conditions = request.conditions,
@@ -178,7 +179,7 @@ namespace Driving_Training_Center.Controllers
         public async Task<ActionResult<License>> PostLicense([FromForm] LicenseRequest request, IFormFile image)
         {
             var list = new List<string>();
-            
+
             foreach (string condition in request.condition)
             {
                 list.Add(condition);

@@ -4,8 +4,10 @@ import RTLContainer from "../components/RTLContainer";
 import Layout from "./layouts/app";
 import {Helmet} from "react-helmet";
 import {Link} from "react-router-dom";
+import {Redirect} from "react-router-dom";
+import {connect} from "react-redux";
 
-export default class Payment extends React.Component {
+class Payment extends React.Component {
 
     constructor(props) {
         super(props);
@@ -18,23 +20,14 @@ export default class Payment extends React.Component {
             licenseTypeErrorMessage: [],
             haveFunctionalCourse   : false,
         };
-        this.validation = this.validation.bind(this);
-    }
-
-    validation() {
-        let hasError                = false;
-        let licenseTypeErrorMessage = [];
-        if (!this.state.licenseType) {
-            licenseTypeErrorMessage.push("لطفا نوع گواهینامه را انتخاب نمایید");
-            hasError = true;
-        }
-        this.setState({
-            licenseTypeErrorMessage,
-            hasError,
-        });
     }
 
     render() {
+
+        if (!this.props.isAuthorized && !localStorage.getItem("access_token")) {
+            return <Redirect to="/sign-up" />;
+        }
+
         return (
             <Layout>
                 <Helmet>
@@ -103,3 +96,11 @@ export default class Payment extends React.Component {
         );
     };
 }
+
+function mapStateToProps(state) {
+    return {
+        isAuthorized: state.isAuthorized,
+    };
+}
+
+export default connect(mapStateToProps)(Payment);

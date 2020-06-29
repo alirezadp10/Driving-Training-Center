@@ -18,7 +18,7 @@ export default class News extends React.Component {
 
     componentDidMount() {
         const {id}      = this.props.match.params;
-        fetch(`${BASE_URL}/news/show/${id}`, {
+        fetch(`${BASE_URL}/api/news/${id}`, {
             method : "GET",
             headers: {
                 "Accept" : "application/json",

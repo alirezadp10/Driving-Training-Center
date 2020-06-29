@@ -38,7 +38,7 @@ export default class Payment extends React.Component {
     }
 
     componentDidMount() {
-        fetch(`${BASE_URL}/licenses/cost`, {
+        fetch(`${BASE_URL}/api/licenses/cost`, {
             method : "GET",
             headers: {
                 "Accept" : "application/json",

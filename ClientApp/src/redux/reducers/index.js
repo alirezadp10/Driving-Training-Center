@@ -1,8 +1,7 @@
 import {AUTHORIZATION, SET_USER_INFO} from "../constants/action-types";
 
 const initialState = {
-    // isAuthorized: !!localStorage["token_type"],
-    isAuthorized: true,
+    isAuthorized: !!localStorage["token_type"],
     user        : localStorage["user"] ? JSON.parse(localStorage["user"]) : null,
 };
 

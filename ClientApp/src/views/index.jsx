@@ -29,7 +29,7 @@ export default class App extends React.Component {
     }
 
     componentDidMount() {
-        fetch(`${BASE_URL}/slider`, {
+        fetch(`${BASE_URL}/api/news/slider`, {
             method : "GET",
             headers: {
                 "Accept" : "application/json",
@@ -42,7 +42,7 @@ export default class App extends React.Component {
             });
         });
 
-        fetch(`${BASE_URL}/teachers`, {
+        fetch(`${BASE_URL}/api/teachers`, {
             method : "GET",
             headers: {
                 "Accept" : "application/json",
@@ -55,7 +55,7 @@ export default class App extends React.Component {
             });
         });
 
-        fetch(`${BASE_URL}/licenses`, {
+        fetch(`${BASE_URL}/api/licenses`, {
             method : "GET",
             headers: {
                 "Accept" : "application/json",

@@ -24,6 +24,7 @@ import {DatePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
 import ReactCrop from "react-image-crop";
 import jMoment from "moment-jalaali";
 import JalaliUtils from "@date-io/jalaali";
+import 'react-image-crop/lib/ReactCrop.scss';
 
 jMoment.loadPersian({dialect: "persian-modern", usePersianDigits: true});
 
@@ -196,7 +197,7 @@ class App extends React.Component {
             "sending": true,
         });
         let status;
-        fetch(BASE_URL + "/api/register", {
+        fetch(BASE_URL + "/api/applicants", {
             method : "POST",
             headers: {
                 "Accept"      : "application/json",
@@ -223,9 +224,8 @@ class App extends React.Component {
                     });
                     localStorage["access_token"]  = jsonData.access_token;
                     localStorage["expires_in"]    = Math.floor(Date.now() / 1000) + jsonData.expires_in;
-                    localStorage["refresh_token"] = jsonData.refresh_token;
                     localStorage["token_type"]    = jsonData.token_type;
-                    localStorage["user"]          = JSON.stringify(jsonData.user);
+                    localStorage["user"]          = JSON.stringify(jsonData.applicant);
                     this.props.setUserInfo(jsonData.user);
                     this.setState({
                         isAuthorized: true,
@@ -266,26 +266,6 @@ class App extends React.Component {
                                             <Grid container spacing={4}>
                                                 <Grid item sm={6}>
                                                     <TextField
-                                                        name="username"
-                                                        error={!!this.state.usernameErrorMessage.length}
-                                                        label="نام کاربری خود را وارد کنید"
-                                                        fullWidth={true}
-                                                        onChange={this.handleChange("username")}
-                                                        variant="outlined"
-                                                        InputProps={{
-                                                            className: `f-light`,
-                                                        }}
-                                                        InputLabelProps={{
-                                                            className: `f-light`,
-                                                        }}
-                                                    />
-                                                    {this.state.usernameErrorMessage.map(message => (
-                                                        <Typography key={Math.random()}
-                                                                    className={`error-message f-smaller`}>{message}</Typography>
-                                                    ))}
-                                                </Grid>
-                                                <Grid item sm={6}>
-                                                    <TextField
                                                         name="firstName"
                                                         error={!!this.state.firstNameErrorMessage.length}
                                                         label="نام خود را وارد کنید"
@@ -304,7 +284,6 @@ class App extends React.Component {
                                                                     className={`error-message f-smaller`}>{message}</Typography>
                                                     ))}
                                                 </Grid>
-
                                                 <Grid item sm={6}>
                                                     <TextField
                                                         name="lastName"
@@ -325,6 +304,7 @@ class App extends React.Component {
                                                                     className={`error-message f-smaller`}>{message}</Typography>
                                                     ))}
                                                 </Grid>
+
                                                 <Grid item sm={6}>
                                                     <TextField
                                                         name="fatherName"
@@ -345,7 +325,6 @@ class App extends React.Component {
                                                                     className={`error-message f-smaller`}>{message}</Typography>
                                                     ))}
                                                 </Grid>
-
                                                 <Grid item sm={6}>
                                                     <FormControl fullWidth={true}
                                                                  variant="outlined">
@@ -376,6 +355,7 @@ class App extends React.Component {
                                                                     className={`error-message f-smaller`}>{message}</Typography>
                                                     ))}
                                                 </Grid>
+
                                                 <Grid item sm={6}>
                                                     <MuiPickersUtilsProvider utils={JalaliUtils} locale="fa">
                                                         <DatePicker
@@ -394,7 +374,6 @@ class App extends React.Component {
                                                         />
                                                     </MuiPickersUtilsProvider>
                                                 </Grid>
-
                                                 <Grid item sm={6}>
                                                     <TextField
                                                         name="phone"
@@ -415,6 +394,7 @@ class App extends React.Component {
                                                                     className={`error-message f-smaller`}>{message}</Typography>
                                                     ))}
                                                 </Grid>
+
                                                 <Grid item sm={6}>
                                                     <TextField
                                                         name="nationalCode"
@@ -435,7 +415,6 @@ class App extends React.Component {
                                                                     className={`error-message f-smaller`}>{message}</Typography>
                                                     ))}
                                                 </Grid>
-
                                                 <Grid item sm={6}>
                                                     <FormControl fullWidth={true}
                                                                  variant="outlined"
@@ -481,6 +460,7 @@ class App extends React.Component {
                                                                     className={`error-message f-smaller`}>{message}</Typography>
                                                     ))}
                                                 </Grid>
+
                                                 <Grid item sm={6}>
                                                     <FormControl fullWidth={true} variant="outlined">
                                                         <InputLabel error={!!this.state.bloodTypeErrorMessage.length}
@@ -532,7 +512,6 @@ class App extends React.Component {
                                                                     className={`error-message f-smaller`}>{message}</Typography>
                                                     ))}
                                                 </Grid>
-
                                                 <Grid item sm={6}>
                                                     <TextField
                                                         name="postalCode"
@@ -553,6 +532,7 @@ class App extends React.Component {
                                                                     className={`error-message f-smaller`}>{message}</Typography>
                                                     ))}
                                                 </Grid>
+
                                                 <Grid item sm={6}>
                                                     <TextField
                                                         name="address"
@@ -573,7 +553,6 @@ class App extends React.Component {
                                                                     className={`error-message f-smaller`}>{message}</Typography>
                                                     ))}
                                                 </Grid>
-
                                                 <Grid item sm={6}>
                                                     <TextField
                                                         name="password"
@@ -594,6 +573,7 @@ class App extends React.Component {
                                                                     className={`error-message f-smaller`}>{message}</Typography>
                                                     ))}
                                                 </Grid>
+
                                                 <Grid item sm={6}>
                                                     <TextField
                                                         name="rePassword"
@@ -610,6 +590,44 @@ class App extends React.Component {
                                                         }}
                                                     />
                                                     {this.state.rePasswordErrorMessage.map(message => (
+                                                        <Typography key={Math.random()}
+                                                                    className={`error-message f-smaller`}>{message}</Typography>
+                                                    ))}
+                                                </Grid>
+                                                <Grid item sm={6}>
+                                                    <input type="file"
+                                                           ref={(ref) => {
+                                                               this.avatarRef = ref;
+                                                           }}
+                                                           accept="image/*"
+                                                           onChange={(event => this.onSelectFile(event, "avatar"))}
+                                                           hidden={true} />
+                                                    <TextField
+                                                        name="avatarImage"
+                                                        disabled
+                                                        error={!!this.state.avatarErrorMessage.length}
+                                                        label="تصویر خود را بارگذاری کنید"
+                                                        fullWidth={true}
+                                                        onClick={() => {
+                                                            this.avatarRef.click();
+                                                        }} variant="outlined"
+                                                        InputProps={{
+                                                            className: `f-light`,
+                                                        }}
+                                                        InputLabelProps={{
+                                                            className: `f-light`,
+                                                        }}
+                                                    />
+                                                    {this.state.avatar && (
+                                                        <ReactCrop
+                                                            style={{marginTop: 10}}
+                                                            src={this.state.avatar}
+                                                            crop={this.state.avatarCrop}
+                                                            ruleOfThirds
+                                                            onChange={(avatarCrop) => this.setState({avatarCrop})}
+                                                        />
+                                                    )}
+                                                    {this.state.avatarErrorMessage.map(message => (
                                                         <Typography key={Math.random()}
                                                                     className={`error-message f-smaller`}>{message}</Typography>
                                                     ))}

@@ -14,7 +14,7 @@ namespace Driving_Training_Center.Helpers
 {
     public interface IAuthService
     {
-        IEnumerable generateJwtToken(string code);
+        Dictionary<string, dynamic> generateJwtToken(string code);
     };
 
     public class AuthService : IAuthService
@@ -26,7 +26,7 @@ namespace Driving_Training_Center.Helpers
             _appSettings = appSettings.Value;
         }
 
-        public IEnumerable generateJwtToken(string national_code)
+        public Dictionary<string,dynamic> generateJwtToken(string national_code)
         {
             // generate token that is valid for 7 days
             var tokenHandler = new JwtSecurityTokenHandler();

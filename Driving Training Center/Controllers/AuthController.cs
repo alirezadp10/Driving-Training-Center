@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
+using System.Collections.Generic;
 
 namespace Driving_Training_Center.Controllers
 {
@@ -44,11 +45,9 @@ namespace Driving_Training_Center.Controllers
             // authentication successful so generate jwt token
             var response = _authService.generateJwtToken(request.national_code);
 
-            return Ok(new
-            {
-                response,
-                applicant = _context.applicants.Where(q => q.national_code == request.national_code)
-            });
+            response["user"] = _context.applicants.Where(q => q.national_code == request.national_code).FirstOrDefault();
+
+            return Ok(response);
         }
 
         [HttpPost("admin/login")]
@@ -65,12 +64,9 @@ namespace Driving_Training_Center.Controllers
             // authentication successful so generate jwt token
             var response = _authService.generateJwtToken(request.national_code);
 
+            response["user"] = _context.staffs.Where(q => q.national_code == request.national_code).FirstOrDefault();
 
-            return Ok(new
-            {
-                response,
-                applicant = _context.staffs.Where(q => q.national_code == request.national_code)
-            });
+            return Ok(response);
         }
 
     }

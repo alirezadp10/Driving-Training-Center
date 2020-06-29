@@ -1,0 +1,168 @@
+@import url("../font/iransans/stylesheet.css");
+/* Change Autocomplete styles in Chrome*/
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+    border             : 1px solid white;
+    -webkit-box-shadow : 0 0 0px 1000px white inset;
+    transition         : background-color 5000s ease-in-out 0s;
+}
+
+textarea:hover,
+input:hover,
+textarea:active,
+input:active,
+textarea:focus,
+input:focus,
+button:focus,
+button:active,
+button:hover,
+label:focus,
+.btn:active,
+.btn.active {
+    outline            : 0px !important;
+    -webkit-appearance : none;
+    box-shadow         : none !important;
+}
+
+.cursor-pointer {
+    cursor : pointer;
+}
+
+.hover:hover {
+    box-shadow : 0 0 8px darkgray
+}
+
+body {
+    margin : 0;
+}
+
+.f-lighter {
+    font-weight : 300 !important;
+}
+
+.f-light {
+    font-weight : 400 !important;
+}
+
+.f-normal {
+    font-weight : 500 !important;
+}
+
+.f-bold {
+    font-weight : 700 !important;
+}
+
+.f-bolder {
+    font-weight : 800 !important;
+}
+
+.f-smaller {
+    font-size   : 12px !important;
+    line-height : 26px !important;
+}
+
+.f-small {
+    font-size   : 15px !important;
+    line-height : 32px !important;
+}
+
+.f-medium {
+    font-size   : 18px !important;
+    line-height : 38px !important;
+}
+
+.f-large {
+    font-size   : 25px !important;
+    line-height : 52px !important;
+}
+
+.f-larger {
+    font-size   : 35px !important;
+    line-height : 72px !important;
+}
+
+.t-center {
+    text-align : center !important;
+}
+
+.center {
+    display         : flex;
+    align-items     : center;
+    justify-content : center;
+}
+
+.left {
+    float : left !important;
+}
+
+.right {
+    float : right !important;
+}
+
+.login-form {
+    text-align : right;
+}
+
+.text-field label {
+    /*transform   : translate(-10px, 14px) scale(1);*/
+    font-size : 16px !important;
+    color     : #7F7F7F;
+}
+
+.text-field input {
+    /*padding     : 13px !important;*/
+    font-size : 18px !important;
+}
+
+.login-btn {
+    margin-top : 20px !important;
+}
+
+.login-btn span {
+    font-size : 15px !important;
+}
+
+.text-bold {
+    display       : block;
+    margin-top    : 5px !important;
+    margin-bottom : 5px !important;
+    text-align    : right;
+    font-size     : 15px !important;
+}
+
+.text-helper {
+    display       : block;
+    margin-top    : 12px !important;
+    margin-right  : 0 !important;
+    text-align    : right;
+    color         : #6C757D !important;
+    font-size     : 13px !important;
+    margin-bottom : 5px !important;
+}
+
+.error-message {
+    font-size     : 13px;
+    background    : #E91E63;
+    padding       : 0 10px;
+    line-height   : 26px !important;
+    margin-top    : 2px !important;
+    color         : white;
+    margin-bottom : 0;
+}
+
+.error-login {
+    font-size     : 15px;
+    background    : #E91E63;
+    padding       : 10px;
+    line-height   : 26px !important;
+    margin-bottom : 10px !important;
+    color         : white;
+    text-align    : center;
+}

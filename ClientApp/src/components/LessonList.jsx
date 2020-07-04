@@ -57,7 +57,7 @@ export default function PinnedSubheaderList({...props}) {
                     <li key={`section-${key}`} className={classes.listSection}>
                         <ul className={classes.ul}>
                             <ListSubheader className={`f-light`}>{`جلسه ${number[key]}`}</ListSubheader>
-                            <Link to={lesson.link} style={{color: "inherit", textDecoration: "none"}}>
+                            <Link to={`lesson/${lesson.id}`} style={{color: "inherit", textDecoration: "none"}}>
                                 <ListItem key={`item-${key}-0`}>
                                     <ListItemText
                                         primary={

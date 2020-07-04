@@ -67,6 +67,10 @@ namespace Driving_Training_Center.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("postal_code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("status")
                         .HasColumnType("nvarchar(max)");
 
@@ -762,6 +766,9 @@ namespace Driving_Training_Center.Migrations
                     b.Property<string>("license_type")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("questions_count")
+                        .HasColumnType("int");
 
                     b.Property<int>("staff_id")
                         .HasColumnType("int");

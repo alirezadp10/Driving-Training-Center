@@ -1,12 +1,17 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import {Provider} from "react-redux";
+import { Provider } from "react-redux";
 import store from "./redux/store/index";
-import {BrowserRouter as Router, Redirect, Route, Switch} from "react-router-dom";
+import {
+    BrowserRouter as Router,
+    Redirect,
+    Route,
+    Switch,
+} from "react-router-dom";
 import Routes from "./Routes";
 import withTracker from "./withTracker";
 import "bootstrap/scss/bootstrap.scss";
-require("./bootstrap.js")
+require("./bootstrap.js");
 
 ReactDOM.render(
     <Provider store={store}>
@@ -18,10 +23,8 @@ ReactDOM.render(
                             key={index}
                             path={route.path}
                             exact={route.exact}
-                            component={withTracker(props => {
-                                return (
-                                    <route.component {...props} />
-                                );
+                            component={withTracker((props) => {
+                                return <route.component {...props} />;
                             })}
                         />
                     );
@@ -30,5 +33,5 @@ ReactDOM.render(
             </Switch>
         </Router>
     </Provider>,
-    document.getElementById("root"),
+    document.getElementById("root")
 );

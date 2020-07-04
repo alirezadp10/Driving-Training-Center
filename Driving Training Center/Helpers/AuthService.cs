@@ -36,7 +36,7 @@ namespace Driving_Training_Center.Helpers
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.Name, national_code)
+                    new Claim("national_code", national_code)
                 }),
                 Expires = expires,
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)

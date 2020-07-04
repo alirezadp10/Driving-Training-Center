@@ -4,116 +4,29 @@ import RTLContainer from "../components/RTLContainer";
 import LicenseTab from "../components/LicenseTab";
 import Layout from "./layouts/app";
 import {Helmet} from "react-helmet";
+import { BASE_URL } from "../constants/app";
 
 export default class TheoryCourse extends React.Component {
+
+    componentDidMount() {
+        fetch(`${BASE_URL}/api/theory-courses`, {
+            method : "GET",
+            headers: {
+                "Accept" : "application/json",
+            },
+        }).then(response => {
+            return response.json();
+        }).then(jsonData => {
+            this.setState({
+                tabs : jsonData,
+            });
+        });
+    }
 
     constructor(props) {
         super(props);
         this.state = {
-            tabs: [
-                {
-                    "label"  : "پایه ۱",
-                    "image"  : require("../assets/images/image08.jpg"),
-                    "lessons": [
-                        {
-                            title: "معرفی دوره",
-                            link : "/theory/",
-                        },
-                        {
-                            title: "قوانین و مقررات راهنمایی و رانندگی",
-                            link : "/theory/",
-                        },
-                        {
-                            title: "رانندگی ایمن",
-                            link : "/theory/",
-                        },
-                        {
-                            title: "آشنایی با سیستم های فنی خودرو و سرویس و نگهداری",
-                            link : "/theory/",
-                        },
-                        {
-                            title: "فرهنگ رانندگی",
-                            link : "/theory/",
-                        },
-                        {
-                            title: "امداد و نجات",
-                            link : "/theory/",
-                        },
-                        {
-                            title: "آلودگی های ترافیک",
-                            link : "/theory/",
-                        },
-                    ],
-                },
-                {
-                    "label"  : "پایه ۲",
-                    "image"  : require("../assets/images/image07.jpeg"),
-                    "lessons": [
-                        {
-                            title: "معرفی دوره",
-                            link : "/theory/",
-                        },
-                        {
-                            title: "قوانین و مقررات راهنمایی و رانندگی",
-                            link : "/theory/",
-                        },
-                        {
-                            title: "رانندگی ایمن",
-                            link : "/theory/",
-                        },
-                        {
-                            title: "آشنایی با سیستم های فنی خودرو و سرویس و نگهداری",
-                            link : "/theory/",
-                        },
-                        {
-                            title: "فرهنگ رانندگی",
-                            link : "/theory/",
-                        },
-                        {
-                            title: "امداد و نجات",
-                            link : "/theory/",
-                        },
-                        {
-                            title: "آلودگی های ترافیک",
-                            link : "/theory/",
-                        },
-                    ],
-                },
-                {
-                    "label"  : "پایه ۳",
-                    "image"  : require("../assets/images/image06.jpg"),
-                    "lessons": [
-                        {
-                            title: "معرفی دوره",
-                            link : "/theory/",
-                        },
-                        {
-                            title: "قوانین و مقررات راهنمایی و رانندگی",
-                            link : "/theory/",
-                        },
-                        {
-                            title: "رانندگی ایمن",
-                            link : "/theory/",
-                        },
-                        {
-                            title: "آشنایی با سیستم های فنی خودرو و سرویس و نگهداری",
-                            link : "/theory/",
-                        },
-                        {
-                            title: "فرهنگ رانندگی",
-                            link : "/theory/",
-                        },
-                        {
-                            title: "امداد و نجات",
-                            link : "/theory/",
-                        },
-                        {
-                            title: "آلودگی های ترافیک",
-                            link : "/theory/",
-                        },
-                    ],
-                },
-            ],
+            tabs: [],
         };
     }
 

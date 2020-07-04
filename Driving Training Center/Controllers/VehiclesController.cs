@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DataLayer;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Driving_Training_Center.Controllers
 {
@@ -45,6 +46,7 @@ namespace Driving_Training_Center.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> PutVehicle(int id, [FromForm] Vehicle vehicle)
         {
             if (id != vehicle.id)
@@ -78,6 +80,7 @@ namespace Driving_Training_Center.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<Vehicle>> PostVehicle([FromForm] Vehicle vehicle)
         {
             _context.vehicles.Add(vehicle);
@@ -88,6 +91,7 @@ namespace Driving_Training_Center.Controllers
 
         // DELETE: api/Vehicles/5
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<ActionResult<Vehicle>> DeleteVehicle(int id)
         {
             var vehicle = await _context.vehicles.FindAsync(id);

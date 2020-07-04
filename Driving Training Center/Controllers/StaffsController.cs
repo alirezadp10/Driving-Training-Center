@@ -1,14 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using DataLayer;
+using Driving_Training_Center.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using DataLayer;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
-using System.Collections;
-using Driving_Training_Center.Helpers;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Driving_Training_Center.Controllers
 {
@@ -25,6 +26,7 @@ namespace Driving_Training_Center.Controllers
 
         // GET: api/Staffs
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<Staff>>> Getstaffs()
         {
             return await _context.staffs.ToListAsync();
@@ -32,6 +34,7 @@ namespace Driving_Training_Center.Controllers
 
         // GET: api/Staffs/5
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<Staff>> GetStaff(int id)
         {
             var staff = _context.staffs
@@ -64,6 +67,7 @@ namespace Driving_Training_Center.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> PutStaff(int id, [FromForm] Staff staff, IFormFile image)
         {
             if (id != staff.id)
@@ -123,6 +127,7 @@ namespace Driving_Training_Center.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<Staff>> PostStaff([FromForm] Staff staff, IFormFile image)
         {
             staff.password = SecurePasswordHasher.Hash(staff.password);
@@ -148,6 +153,7 @@ namespace Driving_Training_Center.Controllers
 
         // DELETE: api/Staffs/5
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<ActionResult<Staff>> DeleteStaff(int id)
         {
             var staff = await _context.staffs.FindAsync(id);

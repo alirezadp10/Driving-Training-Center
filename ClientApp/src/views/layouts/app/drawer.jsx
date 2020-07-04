@@ -9,7 +9,7 @@ import {BorderColor, Home, School, SettingsApplications, VpnKey} from "@material
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faChalkboardTeacher,faIdCard} from "@fortawesome/free-solid-svg-icons";
 import {makeStyles} from "@material-ui/core";
-import RTLContainer from "../../components/RTLContainer";
+import RTLContainer from "../../../components/RTLContainer";
 import {Link} from "react-router-dom";
 // Material styles
 
@@ -45,7 +45,7 @@ export default function Drawer({...props}) {
                     onClick={props.toggleDrawer("right", false)}
                     onKeyDown={props.toggleDrawer("right", false)}
                 >
-                    <img src={require("../../assets/images/image01.jpg")} style={{
+                    <img src={require("../../../assets/images/image01.jpg")} style={{
                         width : "100%",
                         height: "200px",
                     }} />

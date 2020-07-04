@@ -10,6 +10,7 @@ using System.IO;
 using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 using Driving_Training_Center.Helpers;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Driving_Training_Center.Controllers
 {
@@ -108,6 +109,7 @@ namespace Driving_Training_Center.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> PutQuestion(int id, [FromForm] QuestionRequest request, IFormFile image)
         {
             var list = new List<string>();
@@ -179,6 +181,7 @@ namespace Driving_Training_Center.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<Question>> PostQuestion([FromForm] QuestionRequest request, IFormFile image)
         {
             var list = new List<string>();
@@ -218,6 +221,7 @@ namespace Driving_Training_Center.Controllers
 
         // DELETE: api/Questions/5
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<ActionResult<Question>> DeleteQuestion(int id)
         {
             var question = await _context.questions.FindAsync(id);

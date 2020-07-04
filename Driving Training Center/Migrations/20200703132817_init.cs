@@ -21,11 +21,12 @@ namespace Driving_Training_Center.Migrations
                     gender = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     father_name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     national_code = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    birthdate = table.Column<DateTime>(type: "date", nullable: false),
+                    birthdate = table.Column<DateTime>(type: "datetime", nullable: false),
                     phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     education = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     blood_type = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    status = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    status = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    postal_code = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -92,7 +93,7 @@ namespace Driving_Training_Center.Migrations
                     first_name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     last_name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     national_code = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    birthdate = table.Column<DateTime>(type: "date", nullable: false),
+                    birthdate = table.Column<DateTime>(type: "datetime", nullable: false),
                     phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     degree = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     license_type = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -134,7 +135,7 @@ namespace Driving_Training_Center.Migrations
                     gender = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     role = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     national_code = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    birthdate = table.Column<DateTime>(type: "date", nullable: false),
+                    birthdate = table.Column<DateTime>(type: "datetime", nullable: false),
                     phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     salary = table.Column<int>(type: "int", nullable: true)
                 },
@@ -155,7 +156,7 @@ namespace Driving_Training_Center.Migrations
                     last_name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     gender = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     national_code = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    birthdate = table.Column<DateTime>(type: "date", nullable: false),
+                    birthdate = table.Column<DateTime>(type: "datetime", nullable: false),
                     phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     license_type = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     description = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -271,6 +272,7 @@ namespace Driving_Training_Center.Migrations
                     staff_id = table.Column<int>(nullable: false),
                     license_type = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     time = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    questions_count = table.Column<int>(type: "int", nullable: false),
                     description = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -352,7 +354,7 @@ namespace Driving_Training_Center.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     created_at = table.Column<DateTime>(type: "datetime", nullable: false),
                     updated_at = table.Column<DateTime>(type: "datetime", nullable: false),
-                    date = table.Column<DateTime>(type: "date", nullable: false),
+                    date = table.Column<DateTime>(type: "datetime", nullable: false),
                     license_type = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     status = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     applicant_id = table.Column<int>(nullable: false),

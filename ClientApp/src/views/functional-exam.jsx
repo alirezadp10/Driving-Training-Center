@@ -1,5 +1,5 @@
 import React from "react";
-import {Button, Card, Grid, Paper, Typography} from "@material-ui/core";
+import {Card, Grid, Typography} from "@material-ui/core";
 import RTLContainer from "../components/RTLContainer";
 import Layout from "./layouts/app";
 import {Helmet} from "react-helmet";

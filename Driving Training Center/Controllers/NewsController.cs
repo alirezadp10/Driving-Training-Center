@@ -9,6 +9,7 @@ using System.IO;
 using System.ComponentModel.DataAnnotations;
 using System;
 using Driving_Training_Center.Helpers;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Driving_Training_Center.Controllers
 {
@@ -26,9 +27,6 @@ namespace Driving_Training_Center.Controllers
 
         [Required]
         public bool slide { get; set; }
-
-        [Required]
-        public int staff_id { get; set; }
 
         public int?[] categories { get; set; }
     }
@@ -73,7 +71,38 @@ namespace Driving_Training_Center.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<News>>> Getnews()
         {
-            return await _context.news.ToListAsync();
+            var news = _context.news.Include("Staff").ToList()
+                .Join(_context.category_news, n => n.id, cn => cn.news_id, (n, cn) => new { news = n, category_news = cn })
+                .Join(_context.categories, n => n.category_news.category_id, c => c.id, (n, c) => new { news = n, category = c })
+                .Join(_context.images.Where(i => i.imageable_type == "News"), n => n.news.news.id, i => i.imageable_id, (n, i) => new { news = n, image = i })
+                .GroupBy(q => q.news.news.news.id)
+                .AsEnumerable()
+                .Select(q => new
+                {
+                    id = q.Key,
+                    title = q.Select(n => n.news.news.news.title).First(),
+                    content = q.Select(n => n.news.news.news.content).First(),
+                    slide = q.Select(n => n.news.news.news.slide).First(),
+                    writer = new
+                    {
+                        id = q.Select(n => n.news.news.news.Staff.id).First(),
+                        first_name = q.Select(n => n.news.news.news.Staff.first_name).First(),
+                        last_name = q.Select(n => n.news.news.news.Staff.last_name).First(),
+                    },
+                    categories = q.Select(q => new
+                    {
+                        q.news.category.id,
+                        q.news.category.name,
+                    }),
+                    image = Path.Combine("/images/md/", q.Select(n => n.image.name).First())
+                });
+
+            if (news == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(news);
         }
 
         // GET: api/News/5
@@ -99,7 +128,7 @@ namespace Driving_Training_Center.Controllers
                         first_name = q.Select(n => n.news.news.news.Staff.first_name).First(),
                         last_name = q.Select(n => n.news.news.news.Staff.last_name).First(),
                     },
-                    categries = q.Select(q => new
+                    categories = q.Select(q => new
                     {
                         q.news.category.id,
                         q.news.category.name,
@@ -119,8 +148,21 @@ namespace Driving_Training_Center.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> PutNews(int id, [FromForm] NewsRequest request, IFormFile image)
         {
+            var identity = User.Identity as System.Security.Claims.ClaimsIdentity;
+            IEnumerable<System.Security.Claims.Claim> claims = identity.Claims;
+            var national_code = claims.Where(p => p.Type == "national_code").FirstOrDefault()?.Value;
+
+            var staff = _context.staffs.Where(q => q.national_code == national_code).FirstOrDefault();
+
+            if (staff == null)
+            {
+                return Unauthorized();
+            }
+
+
             if (id != request.id)
             {
                 return BadRequest();
@@ -132,7 +174,7 @@ namespace Driving_Training_Center.Controllers
                 content = request.content,
                 slide = request.slide,
                 updated_at = DateTime.Now,
-                staff_id = request.staff_id,
+                staff_id = staff.id,
             };
 
             _context.Entry(news).State = EntityState.Modified;
@@ -200,20 +242,31 @@ namespace Driving_Training_Center.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<News>> PostNews([FromForm] NewsRequest request, IFormFile image)
         {
+            var identity = User.Identity as System.Security.Claims.ClaimsIdentity;
+            IEnumerable<System.Security.Claims.Claim> claims = identity.Claims;
+            var national_code = claims.Where(p => p.Type == "national_code").FirstOrDefault()?.Value;
+
+            var staff = _context.staffs.Where(q => q.national_code == national_code).FirstOrDefault();
+
+            if(staff == null)
+            {
+                return Unauthorized();
+            }
+
             var news = new News
             {
                 title = request.title,
                 content = request.content,
                 slide = request.slide,
-                staff_id = request.staff_id,
+                staff_id = staff.id,
             };
 
             _context.news.Add(news);
 
             await _context.SaveChangesAsync();
-
 
             if (request.categories != null)
             {
@@ -246,6 +299,7 @@ namespace Driving_Training_Center.Controllers
 
         // DELETE: api/News/5
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<ActionResult<News>> DeleteNews(int id)
         {
             var news = await _context.news.FindAsync(id);

@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Driving_Training_Center.Migrations
 {
     [DbContext(typeof(DrivingTrainingCenterContext))]
-    [Migration("20200628223104_init")]
-    partial class init
+    [Migration("20200703233527_change date")]
+    partial class changedate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -66,6 +66,10 @@ namespace Driving_Training_Center.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("phone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("postal_code")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -764,6 +768,9 @@ namespace Driving_Training_Center.Migrations
                     b.Property<string>("license_type")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("questions_count")
+                        .HasColumnType("int");
 
                     b.Property<int>("staff_id")
                         .HasColumnType("int");

@@ -54,5 +54,9 @@ namespace DataLayer
 
         [Column(TypeName = "nvarchar(max)")]
         public string status { get; set; }
+
+        [Required]
+        [Column(TypeName = "nvarchar(max)")]
+        public string postal_code { get; set; }
     }
 }

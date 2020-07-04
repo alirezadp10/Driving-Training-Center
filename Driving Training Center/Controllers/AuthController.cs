@@ -19,7 +19,7 @@ namespace Driving_Training_Center.Controllers
 
     [Route("api")]
     [Authorize]
-    [ApiController]
+    [ApiController] 
     public class AuthController : ControllerBase
     {
         private IAuthService _authService;
@@ -50,6 +50,7 @@ namespace Driving_Training_Center.Controllers
             return Ok(response);
         }
 
+        [AllowAnonymous]
         [HttpPost("admin/login")]
         public IActionResult StaffLogin([FromForm] AuthenticateRequest request)
         {
@@ -59,7 +60,6 @@ namespace Driving_Training_Center.Controllers
 
             if (user == null || !SecurePasswordHasher.Verify(request.password, user.password))
                 return BadRequest(new { message = "Username or password is incorrect" });
-
 
             // authentication successful so generate jwt token
             var response = _authService.generateJwtToken(request.national_code);

@@ -11,6 +11,7 @@ using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Driving_Training_Center.Controllers
 {
@@ -105,6 +106,7 @@ namespace Driving_Training_Center.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> PutLicense(int id, [FromForm] LicenseRequest request, IFormFile image)
         {
             var list = new List<string>();
@@ -176,6 +178,7 @@ namespace Driving_Training_Center.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<License>> PostLicense([FromForm] LicenseRequest request, IFormFile image)
         {
             var list = new List<string>();
@@ -214,6 +217,7 @@ namespace Driving_Training_Center.Controllers
 
         // DELETE: api/Licenses/5
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<ActionResult<License>> DeleteLicense(int id)
         {
             var license = await _context.licenses.FindAsync(id);

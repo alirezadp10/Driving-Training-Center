@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using DataLayer;
 using System.IO;
 using Driving_Training_Center.Helpers;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Driving_Training_Center.Controllers
 {
@@ -27,22 +28,22 @@ namespace Driving_Training_Center.Controllers
         public async Task<ActionResult<IEnumerable<Lesson>>> Getlessons()
         {
             var lessons = _context.lessons.Include("TheoryCourse").ToList()
-    .Join(_context.images.Where(i => i.imageable_type == "Lesson"), l => l.id, i => i.imageable_id, (l, i) => new { lesson = l, image = i })
-    .Join(_context.staffs, l => l.lesson.TheoryCourse.staff_id, s => s.id, (l, s) => new { lesson = l, staff = s })
-    .AsEnumerable()
-    .Select(q => new
-    {
-        q.lesson.lesson.title,
-        q.lesson.lesson.content,
-        q.lesson.lesson.TheoryCourse.license_type,
-        writer = new
-        {
-            q.staff.id,
-            q.staff.first_name,
-            q.staff.last_name,
-        },
-        image = Path.Combine("/Images/lg/", q.lesson.image.name)
-    });
+                            .Join(_context.images.Where(i => i.imageable_type == "Lesson"), l => l.id, i => i.imageable_id, (l, i) => new { lesson = l, image = i })
+                            .Join(_context.staffs, l => l.lesson.TheoryCourse.staff_id, s => s.id, (l, s) => new { lesson = l, staff = s })
+                            .AsEnumerable()
+                            .Select(q => new
+                            {
+                                q.lesson.lesson.title,
+                                q.lesson.lesson.content,
+                                q.lesson.lesson.TheoryCourse.license_type,
+                                writer = new
+                                {
+                                    q.staff.id,
+                                    q.staff.first_name,
+                                    q.staff.last_name,
+                                },
+                                image = Path.Combine("/Images/lg/", q.lesson.image.name)
+                            });
             return Ok(lessons);
 
         }
@@ -66,7 +67,7 @@ namespace Driving_Training_Center.Controllers
                        q.staff.last_name,
                    },
                    image = Path.Combine("/Images/lg/", q.lesson.image.name)
-               });
+               }).First();
 
 
             if (lesson == null)
@@ -81,6 +82,7 @@ namespace Driving_Training_Center.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> PutLesson(int id, [FromForm]Lesson lesson, IFormFile image)
         {
             if (id != lesson.id)
@@ -97,24 +99,27 @@ namespace Driving_Training_Center.Controllers
 
                 var pImage = _context.images.Where(i => (i.imageable_id == lesson.id && i.imageable_type == "Lesson")).FirstOrDefault();
 
-                ImagesHelper.delete(pImage.name);
-
-                image_name = ImagesHelper.save(image);
-
-                var local = _context.Set<Image>().Local.FirstOrDefault(i => i.id == pImage.id);
-
-                if (local != null)
+                if (pImage != null)
                 {
-                    _context.Entry(local).State = EntityState.Detached;
+                    ImagesHelper.delete(pImage.name);
+
+                    image_name = ImagesHelper.save(image);
+
+                    var local = _context.Set<Image>().Local.FirstOrDefault(i => i.id == pImage.id);
+
+                    if (local != null)
+                    {
+                        _context.Entry(local).State = EntityState.Detached;
+                    }
+
+                    _context.Entry(new Image
+                    {
+                        id = pImage.id,
+                        name = image_name,
+                        imageable_id = lesson.id,
+                        imageable_type = "Lesson"
+                    }).State = EntityState.Modified;
                 }
-
-                _context.Entry(new Image
-                {
-                    id = pImage.id,
-                    name = image_name,
-                    imageable_id = lesson.id,
-                    imageable_type = "Lesson"
-                }).State = EntityState.Modified;
             }
 
             try
@@ -140,6 +145,7 @@ namespace Driving_Training_Center.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<Lesson>> PostLesson([FromForm]Lesson lesson, IFormFile image)
         {
             _context.lessons.Add(lesson);
@@ -161,6 +167,7 @@ namespace Driving_Training_Center.Controllers
 
         // DELETE: api/Lessons/5
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<ActionResult<Lesson>> DeleteLesson(int id)
         {
             var lesson = await _context.lessons.FindAsync(id);

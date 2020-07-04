@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DataLayer;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Driving_Training_Center.Controllers
 {
@@ -45,14 +46,27 @@ namespace Driving_Training_Center.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPayment(int id, [FromForm] Payment payment)
+        [Authorize]
+        public async Task<IActionResult> PutPayment(int id, [FromForm]  int license_id)
         {
-            if (id != payment.id)
+            var identity = User.Identity as System.Security.Claims.ClaimsIdentity;
+            IEnumerable<System.Security.Claims.Claim> claims = identity.Claims;
+            var national_code = claims.Where(p => p.Type == "national_code").FirstOrDefault()?.Value;
+
+            var applicant = _context.applicants.Where(q => q.national_code == national_code).FirstOrDefault();
+
+            if (applicant == null)
             {
-                return BadRequest();
+                return Unauthorized();
             }
 
-            payment.updated_at = DateTime.Now;
+            var payment = new Payment
+            {
+                applicant_id = applicant.id,
+                license_id = license_id,
+                updated_at = DateTime.Now
+            };
+
             _context.Entry(payment).State = EntityState.Modified;
 
             try
@@ -78,8 +92,26 @@ namespace Driving_Training_Center.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<Payment>> PostPayment([FromForm] Payment payment)
+        [Authorize]
+        public async Task<ActionResult<Payment>> PostPayment([FromForm] int license_id)
         {
+            var identity = User.Identity as System.Security.Claims.ClaimsIdentity;
+            IEnumerable<System.Security.Claims.Claim> claims = identity.Claims;
+            var national_code = claims.Where(p => p.Type == "national_code").FirstOrDefault()?.Value;
+
+            var applicant = _context.applicants.Where(q => q.national_code == national_code).FirstOrDefault();
+
+            if (applicant == null)
+            {
+                return Unauthorized();
+            }
+
+            var payment = new Payment
+            {
+                applicant_id = applicant.id,
+                license_id = license_id,
+            };
+
             _context.payments.Add(payment);
             await _context.SaveChangesAsync();
 
@@ -88,6 +120,7 @@ namespace Driving_Training_Center.Controllers
 
         // DELETE: api/Payments/5
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<ActionResult<Payment>> DeletePayment(int id)
         {
             var payment = await _context.payments.FindAsync(id);

@@ -30,6 +30,10 @@ namespace Driving_Training_Center.Controllers
         [Authorize]
         public async Task<ActionResult<IEnumerable>> Getapplicants()
         {
+            //var result = _context.applicants.FromSqlRaw("Select * from licenses").ToList();
+
+            //return Ok(result);
+
             return await _context.applicants.Select(q => new
             {
                 q.id,
@@ -72,7 +76,7 @@ namespace Driving_Training_Center.Controllers
             response["status"] = applicant.status;
 
             var images = _context.images.Where(
-                image => (image.imageable_type == "Applicant" || image.imageable_type == "National_Card" || image.imageable_type == "Birth_Certificate")
+                image => (image.imageable_type == "Applicant" || image.imageable_type == "National_Card")
                 && image.imageable_id == id)
                 .AsEnumerable()
                 .Select(image => new Image
@@ -94,7 +98,7 @@ namespace Driving_Training_Center.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutApplicant(int id, [FromForm] Applicant applicant, IFormFile avatar, IFormFile birth_certificate, IFormFile national_card)
+        public async Task<IActionResult> PutApplicant(int id, [FromForm] Applicant applicant, IFormFile avatar, IFormFile national_card)
         {
             if (id != applicant.id)
             {
@@ -108,7 +112,7 @@ namespace Driving_Training_Center.Controllers
             var images = new Dictionary<string, dynamic> { };
 
             var result = _context.images.Where(
-                image => (image.imageable_type == "Applicant" || image.imageable_type == "National_Card" || image.imageable_type == "Birth_Certificate")
+                image => (image.imageable_type == "Applicant" || image.imageable_type == "National_Card")
                 && image.imageable_id == id)
                 .AsEnumerable()
                 .Select(image => new Image
@@ -148,27 +152,6 @@ namespace Driving_Training_Center.Controllers
                     name = image_name,
                     imageable_id = applicant.id,
                     imageable_type = "Applicant"
-                }).State = EntityState.Modified;
-            }
-
-            if (birth_certificate != null)
-            {
-                ImagesHelper.delete(images["Birth_Certificate"].name);
-
-                image_name = ImagesHelper.save(birth_certificate);
-
-                var local = _context.Set<Image>().Local.FirstOrDefault(i => i.id == images["Birth_Certificate"].id);
-
-                if (local != null)
-                {
-                    _context.Entry(local).State = EntityState.Detached;
-                }
-                _context.Entry(new Image
-                {
-                    id = images["Birth_Certificate"].id,
-                    name = image_name,
-                    imageable_id = applicant.id,
-                    imageable_type = "Birth_Certificate"
                 }).State = EntityState.Modified;
             }
 
@@ -217,7 +200,7 @@ namespace Driving_Training_Center.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<Applicant>> PostApplicant([FromForm] Applicant applicant, IFormFile avatar, IFormFile birth_certificate, IFormFile national_card)
+        public async Task<ActionResult<Applicant>> PostApplicant([FromForm] Applicant applicant, IFormFile avatar, IFormFile national_card)
         {
             applicant.status = "PENDING";
             applicant.password = SecurePasswordHasher.Hash(applicant.password);
@@ -235,16 +218,6 @@ namespace Driving_Training_Center.Controllers
                 imageable_id = applicant_id,
                 imageable_type = "Applicant"
             });
-
-            image_name = ImagesHelper.save(birth_certificate);
-
-            _context.images.Add(new Image
-            {
-                name = image_name,
-                imageable_id = applicant_id,
-                imageable_type = "Birth_Certificate"
-            });
-
 
             image_name = ImagesHelper.save(national_card);
 
@@ -274,9 +247,8 @@ namespace Driving_Training_Center.Controllers
 
             var images = new Dictionary<string, dynamic> { };
 
-
             var result = _context.images.Where(
-                image => (image.imageable_type == "Applicant" || image.imageable_type == "National_Card" || image.imageable_type == "Birth_Certificate")
+                image => (image.imageable_type == "Applicant" || image.imageable_type == "National_Card")
                 && image.imageable_id == id)
                 .AsEnumerable()
                 .Select(image => new Image
@@ -302,13 +274,6 @@ namespace Driving_Training_Center.Controllers
                 _context.Entry(local).State = EntityState.Detached;
             }
 
-            local = _context.Set<Image>().Local.FirstOrDefault(i => i.id == images["Birth_Certificate"].id);
-
-            if (local != null)
-            {
-                _context.Entry(local).State = EntityState.Detached;
-            }
-
             local = _context.Set<Image>().Local.FirstOrDefault(i => i.id == images["National_Card"].id);
 
             if (local != null)
@@ -326,14 +291,6 @@ namespace Driving_Training_Center.Controllers
 
             _context.images.Remove(new Image
             {
-                id = images["Birth_Certificate"].id,
-                name = images["Birth_Certificate"].name,
-                imageable_id = applicant.id,
-                imageable_type = "Birth_Certificate"
-            });
-
-            _context.images.Remove(new Image
-            {
                 id = images["National_Card"].id,
                 name = images["National_Card"].name,
                 imageable_id = applicant.id,
@@ -341,7 +298,6 @@ namespace Driving_Training_Center.Controllers
             });
 
             ImagesHelper.delete(images["Applicant"].name);
-            ImagesHelper.delete(images["Birth_Certificate"].name);
             ImagesHelper.delete(images["National_Card"].name);
 
             await _context.SaveChangesAsync();

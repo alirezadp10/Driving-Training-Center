@@ -20,6 +20,10 @@ namespace DataLayer
         [Column(TypeName = "nvarchar(max)")]
         public string time { get; set; }
 
+        [Required]
+        [Column(TypeName = "int")]
+        public int questions_count { get; set; }
+
         [Column(TypeName = "nvarchar(max)")]
         public string description { get; set; }
     }

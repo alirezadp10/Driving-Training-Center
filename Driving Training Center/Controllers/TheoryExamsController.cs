@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DataLayer;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Driving_Training_Center.Controllers
 {
@@ -22,6 +23,7 @@ namespace Driving_Training_Center.Controllers
 
         // GET: api/theory-exams
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<TheoryExam>>> Gettheorxams()
         {
             return await _context.theory_exams.ToListAsync();
@@ -29,6 +31,7 @@ namespace Driving_Training_Center.Controllers
 
         // GET: api/theory-exams/5
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<TheoryExam>> GetTheoryExam(int id)
         {
             var theoryExam = await _context.theory_exams.FindAsync(id);
@@ -45,8 +48,22 @@ namespace Driving_Training_Center.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> PutTheoryExam(int id, [FromForm] TheoryExam theoryExam)
         {
+            var identity = User.Identity as System.Security.Claims.ClaimsIdentity;
+            IEnumerable<System.Security.Claims.Claim> claims = identity.Claims;
+            var national_code = claims.Where(p => p.Type == "national_code").FirstOrDefault()?.Value;
+
+            var staff = _context.staffs.Where(q => q.national_code == national_code).FirstOrDefault();
+
+            if (staff == null)
+            {
+                return Unauthorized();
+            }
+
+            theoryExam.staff_id = staff.id;
+
             if (id != theoryExam.id)
             {
                 return BadRequest();
@@ -78,8 +95,22 @@ namespace Driving_Training_Center.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<TheoryExam>> PostTheoryExam([FromForm] TheoryExam theoryExam)
         {
+            var identity = User.Identity as System.Security.Claims.ClaimsIdentity;
+            IEnumerable<System.Security.Claims.Claim> claims = identity.Claims;
+            var national_code = claims.Where(p => p.Type == "national_code").FirstOrDefault()?.Value;
+
+            var staff = _context.staffs.Where(q => q.national_code == national_code).FirstOrDefault();
+
+            if (staff == null)
+            {
+                return Unauthorized();
+            }
+
+            theoryExam.staff_id = staff.id;
+
             _context.theory_exams.Add(theoryExam);
             await _context.SaveChangesAsync();
 
@@ -88,6 +119,7 @@ namespace Driving_Training_Center.Controllers
 
         // DELETE: api/theory-exams/5
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<ActionResult<TheoryExam>> DeleteTheoryExam(int id)
         {
             var theoryExam = await _context.theory_exams.FindAsync(id);

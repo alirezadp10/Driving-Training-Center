@@ -23,8 +23,9 @@ import {connect} from "react-redux";
 import {DatePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
 import ReactCrop from "react-image-crop";
 import jMoment from "moment-jalaali";
+import moment from "moment";
 import JalaliUtils from "@date-io/jalaali";
-import 'react-image-crop/lib/ReactCrop.scss';
+import "react-image-crop/lib/ReactCrop.scss";
 
 jMoment.loadPersian({dialect: "persian-modern", usePersianDigits: true});
 
@@ -33,9 +34,10 @@ class App extends React.Component {
     constructor(props) {
         super(props);
         this.state        = {
-            isAuthorized                     : false,
+            registered                       : false,
             hasError                         : false,
             sending                          : false,
+            birthdate                        : moment().format('YYYY-MM-DD').FarsiToDigits(),
             bloodType                        : "",
             bloodTypeErrorMessage            : [],
             password                         : "",
@@ -44,8 +46,6 @@ class App extends React.Component {
             rePasswordErrorMessage           : [],
             education                        : "",
             educationErrorMessage            : [],
-            username                         : "",
-            usernameErrorMessage             : [],
             firstName                        : "",
             firstNameErrorMessage            : [],
             lastName                         : "",
@@ -58,6 +58,15 @@ class App extends React.Component {
             phoneErrorMessage                : [],
             nationalCode                     : "",
             nationalCodeErrorMessage         : [],
+            avatarCrop                       : {
+                unit  : "%",
+                width : 80,
+                height: 80,
+                x     : 10,
+                y     : 10,
+            },
+            avatar                           : null,
+            avatarErrorMessage               : [],
             nationalCardCrop                 : {
                 unit  : "%",
                 width : 80,
@@ -67,17 +76,6 @@ class App extends React.Component {
             },
             nationalCardImage                : null,
             nationalCardImageErrorMessage    : [],
-            birthCertificateCrop             : {
-                unit  : "%",
-                width : 80,
-                height: 80,
-                x     : 10,
-                y     : 10,
-            },
-            birthCertificateImage            : null,
-            birthCertificateImageErrorMessage: [],
-            address                          : "",
-            addressErrorMessage              : [],
             postalCode                       : "",
             postalCodeErrorMessage           : [],
         };
@@ -86,6 +84,13 @@ class App extends React.Component {
     }
 
     handleChange = name => event => {
+        if(name == "birthdate"){
+            this.setState({
+                [name]: event.format("YYYY-MM-DD").FarsiToDigits(),
+            });
+            return;
+        }
+
         this.setState({
             [name]: event.target.value,
         });
@@ -95,23 +100,17 @@ class App extends React.Component {
         let hasError                          = false;
         let passwordErrorMessage              = [];
         let rePasswordErrorMessage            = [];
-        let usernameErrorMessage              = [];
         let firstNameErrorMessage             = [];
         let lastNameErrorMessage              = [];
         let fatherNameErrorMessage            = [];
         let nationalCodeErrorMessage          = [];
         let phoneErrorMessage                 = [];
         let postalCodeErrorMessage            = [];
-        let addressErrorMessage               = [];
         let sexErrorMessage                   = [];
         let educationErrorMessage             = [];
         let bloodTypeErrorMessage             = [];
         let nationalCardImageErrorMessage     = [];
-        let birthCertificateImageErrorMessage = [];
-        if (!this.state.username) {
-            usernameErrorMessage.push("پر کردن این فیلد ضروری است");
-            hasError = true;
-        }
+        let avatarErrorMessage                = [];
         if (!this.state.firstName) {
             firstNameErrorMessage.push("پر کردن این فیلد ضروری است");
             hasError = true;
@@ -144,10 +143,6 @@ class App extends React.Component {
             postalCodeErrorMessage.push("پر کردن این فیلد ضروری است");
             hasError = true;
         }
-        if (!this.state.address) {
-            addressErrorMessage.push("پر کردن این فیلد ضروری است");
-            hasError = true;
-        }
         if (!this.state.sex) {
             sexErrorMessage.push("انتخاب کردن این فیلد ضروری است");
             hasError = true;
@@ -164,8 +159,8 @@ class App extends React.Component {
             nationalCardImageErrorMessage.push("بارگذاری کردن این فیلد ضروری است");
             hasError = true;
         }
-        if (!this.birthCertificateImageRef.files[0]) {
-            birthCertificateImageErrorMessage.push("بارگذاری کردن این فیلد ضروری است");
+        if (!this.avatarRef.files[0]) {
+            avatarErrorMessage.push("بارگذاری کردن این فیلد ضروری است");
             hasError = true;
         }
         this.setState({
@@ -173,18 +168,16 @@ class App extends React.Component {
             sexErrorMessage,
             passwordErrorMessage,
             rePasswordErrorMessage,
-            usernameErrorMessage,
             firstNameErrorMessage,
             lastNameErrorMessage,
             fatherNameErrorMessage,
             nationalCodeErrorMessage,
             phoneErrorMessage,
             postalCodeErrorMessage,
-            addressErrorMessage,
             educationErrorMessage,
             bloodTypeErrorMessage,
             nationalCardImageErrorMessage,
-            birthCertificateImageErrorMessage,
+            avatarErrorMessage,
         });
     }
 
@@ -197,16 +190,26 @@ class App extends React.Component {
             "sending": true,
         });
         let status;
+        let formData      = new FormData();
+        formData.append("password", this.state.password);
+        formData.append("first_name", this.state.firstName);
+        formData.append("last_name", this.state.lastName);
+        formData.append("father_name", this.state.fatherName);
+        formData.append("gender", this.state.sex);
+        formData.append("national_code", this.state.nationalCode);
+        formData.append("birthdate", this.state.birthdate);
+        formData.append("phone", this.state.phone);
+        formData.append("education", this.state.education);
+        formData.append("blood_type", this.state.bloodType);
+        formData.append("postal_code", this.state.postalCode);
+        formData.append("avatar", this.avatarRef.files[0]);
+        formData.append("national_card", this.nationalCardImageRef.files[0]);
         fetch(BASE_URL + "/api/applicants", {
             method : "POST",
+            body   : formData,
             headers: {
                 "Accept"      : "application/json",
-                "Content-Type": "application/json",
             },
-            body   : JSON.stringify({
-                "username": this.state.username,
-                "password": this.state.password,
-            }),
         })
             .then(response => {
                 status = response.status;
@@ -218,17 +221,9 @@ class App extends React.Component {
                 });
                 if (status === 401) {
                 }
-                if (status === 200) {
-                    this.props.authorization({
-                        status: "authorized",
-                    });
-                    localStorage["access_token"]  = jsonData.access_token;
-                    localStorage["expires_in"]    = Math.floor(Date.now() / 1000) + jsonData.expires_in;
-                    localStorage["token_type"]    = jsonData.token_type;
-                    localStorage["user"]          = JSON.stringify(jsonData.applicant);
-                    this.props.setUserInfo(jsonData.user);
+                if (status === 201) {
                     this.setState({
-                        isAuthorized: true,
+                        "registered": true,
                     });
                 }
             });
@@ -245,8 +240,8 @@ class App extends React.Component {
     };
 
     render() {
-        if (this.state.isAuthorized || localStorage.getItem("access_token")) {
-            return <Redirect to="/" />;
+        if (this.state.registered) {
+            return <Redirect to={"/sign-in"} />;
         }
 
         return (
@@ -342,11 +337,9 @@ class App extends React.Component {
                                                             }}>
                                                             <MenuItem value={"male"} style={{
                                                                 justifyContent: "flex-end",
-
                                                             }}>مرد</MenuItem>
                                                             <MenuItem value={"female"} style={{
                                                                 justifyContent: "flex-end",
-
                                                             }}>زن</MenuItem>
                                                         </Select>
                                                     </FormControl>
@@ -362,15 +355,17 @@ class App extends React.Component {
                                                             InputProps={{
                                                                 className: `f-light`,
                                                             }}
+                                                            // type="date"
+                                                            format={"jYYYY-jMM-jDD"}
                                                             label="تاریخ تولد"
                                                             inputVariant="outlined"
                                                             okLabel="تأیید"
                                                             cancelLabel="لغو"
                                                             clearLabel="پاک کردن"
-                                                            labelFunc={date => (date ? date.format("jYYYY/jMM/jDD") : "")}
-                                                            // value={selectedDate}
-                                                            // onChange={handleDateChange}
+                                                            // labelFunc={date => (date ? date.format("jYYYY/jMM/jDD") : "")}
+                                                            value={this.state.birthdate}
                                                             fullWidth={true}
+                                                            onChange={this.handleChange("birthdate")}
                                                         />
                                                     </MuiPickersUtilsProvider>
                                                 </Grid>
@@ -535,26 +530,6 @@ class App extends React.Component {
 
                                                 <Grid item sm={6}>
                                                     <TextField
-                                                        name="address"
-                                                        error={!!this.state.addressErrorMessage.length}
-                                                        label="آدرس خود را وارد کنید"
-                                                        fullWidth={true}
-                                                        onChange={this.handleChange("address")}
-                                                        variant="outlined"
-                                                        InputProps={{
-                                                            className: `f-light`,
-                                                        }}
-                                                        InputLabelProps={{
-                                                            className: `f-light`,
-                                                        }}
-                                                    />
-                                                    {this.state.addressErrorMessage.map(message => (
-                                                        <Typography key={Math.random()}
-                                                                    className={`error-message f-smaller`}>{message}</Typography>
-                                                    ))}
-                                                </Grid>
-                                                <Grid item sm={6}>
-                                                    <TextField
                                                         name="password"
                                                         error={!!this.state.passwordErrorMessage.length}
                                                         label="رمز عبور خود را وارد کنید"
@@ -573,7 +548,6 @@ class App extends React.Component {
                                                                     className={`error-message f-smaller`}>{message}</Typography>
                                                     ))}
                                                 </Grid>
-
                                                 <Grid item sm={6}>
                                                     <TextField
                                                         name="rePassword"
@@ -594,6 +568,7 @@ class App extends React.Component {
                                                                     className={`error-message f-smaller`}>{message}</Typography>
                                                     ))}
                                                 </Grid>
+
                                                 <Grid item sm={6}>
                                                     <input type="file"
                                                            ref={(ref) => {
@@ -632,7 +607,6 @@ class App extends React.Component {
                                                                     className={`error-message f-smaller`}>{message}</Typography>
                                                     ))}
                                                 </Grid>
-
                                                 <Grid item sm={6}>
                                                     <input type="file"
                                                            ref={(ref) => {
@@ -667,44 +641,6 @@ class App extends React.Component {
                                                         />
                                                     )}
                                                     {this.state.nationalCardImageErrorMessage.map(message => (
-                                                        <Typography key={Math.random()}
-                                                                    className={`error-message f-smaller`}>{message}</Typography>
-                                                    ))}
-                                                </Grid>
-                                                <Grid item sm={6}>
-                                                    <input type="file"
-                                                           ref={(ref) => {
-                                                               this.birthCertificateImageRef = ref;
-                                                           }}
-                                                           accept="image/*"
-                                                           onChange={(event => this.onSelectFile(event, "birthCertificateImage"))}
-                                                           hidden={true} />
-                                                    <TextField
-                                                        name="birthCertificateImage"
-                                                        disabled
-                                                        error={!!this.state.birthCertificateImageErrorMessage.length}
-                                                        label="تصویر صفحه ی اول شناسنامه خود را بارگذاری کنید"
-                                                        fullWidth={true}
-                                                        onClick={() => {
-                                                            this.birthCertificateImageRef.click();
-                                                        }} variant="outlined"
-                                                        InputProps={{
-                                                            className: `f-light`,
-                                                        }}
-                                                        InputLabelProps={{
-                                                            className: `f-light`,
-                                                        }}
-                                                    />
-                                                    {this.state.birthCertificateImage && (
-                                                        <ReactCrop
-                                                            style={{marginTop: 10}}
-                                                            src={this.state.birthCertificateImage}
-                                                            crop={this.state.birthCertificateCrop}
-                                                            ruleOfThirds
-                                                            onChange={(birthCertificateCrop) => this.setState({birthCertificateCrop})}
-                                                        />
-                                                    )}
-                                                    {this.state.birthCertificateImageErrorMessage.map(message => (
                                                         <Typography key={Math.random()}
                                                                     className={`error-message f-smaller`}>{message}</Typography>
                                                     ))}

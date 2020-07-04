@@ -33,7 +33,7 @@ export default function LicenseCard(props) {
     const classes = useStyles();
     return (
         <div className={classes.parent}>
-            <img src={BASE_URL + props.image} className={classes.image} />
+            <img alt="" src={BASE_URL + props.image} className={classes.image} />
             <Typography className={`f-large f-bold mt-3 mb-3`}>{props.title.toString().DigitsToFarsi()}</Typography>
             <ul className={`text-right`} style={{paddingRight: 30}}>
                 {props.conditions.map((condition,key) => {

@@ -1,9 +1,7 @@
 import React from "react";
-// Material core
 import {
     AppBar,
     Badge,
-    Button,
     IconButton,
     InputBase,
     makeStyles,
@@ -13,19 +11,20 @@ import {
     Typography,
     useScrollTrigger,
 } from "@material-ui/core";
-// Material icons
-import MenuIcon from "@material-ui/icons/MenuSharp";
 import SearchIcon from "@material-ui/icons/SearchTwoTone";
 import AccountCircle from "@material-ui/icons/AccountCircleTwoTone";
 import MailIcon from "@material-ui/icons/MailTwoTone";
 import NotificationsIcon from "@material-ui/icons/NotificationsTwoTone";
 import MoreIcon from "@material-ui/icons/MoreVertTwoTone";
 import Drawer from "./drawer";
-import NavBarMenu from "../../components/NavBarMenu";
-// Router
+import NavBarMenu from "../../../components/NavBarMenu";
 import {Link} from "react-router-dom";
 
 const useStyles = makeStyles(theme => ({
+    appbar        : {
+        width          : `calc(100% - 250px)`,
+        marginRight    : 250,
+    },
     link          : {
         color         : "inherit",
         textDecoration: "none",
@@ -37,9 +36,6 @@ const useStyles = makeStyles(theme => ({
     list          : {
         width: 350,
     },
-    fullList      : {
-        width: "auto",
-    },
     grow          : {
         flexGrow: 1,
     },
@@ -48,6 +44,7 @@ const useStyles = makeStyles(theme => ({
     },
     title         : {
         fontFamily                  : "IRANSans",
+        color                       : "white",
         fontWeight                  : "bold",
         display                     : "none",
         [theme.breakpoints.up("sm")]: {
@@ -57,9 +54,9 @@ const useStyles = makeStyles(theme => ({
     search        : {
         position                      : "relative",
         borderRadius                  : theme.shape.borderRadius,
-        backgroundColor               : "#e3e3e3",
+        backgroundColor               : "#32424A",
         "&:hover"                     : {
-            backgroundColor: "#f2f2f2",
+            backgroundColor: "#546E7A",
         },
         marginRight                   : 0,
         marginLeft                    : theme.spacing(2),
@@ -132,93 +129,6 @@ export default function Navbar({...props}) {
     const classes = useStyles();
     return (
         <div className={classes.grow}>
-            <HideOnScroll {...props}>
-                <AppBar>
-                    <Toolbar>
-                        {/* user */}
-                        <div className={classes.sectionDesktop}>
-                            {props.isLogin &&
-                            <div>
-                                <IconButton
-                                    color="inherit"
-                                    onClick={props.userMenuOpen}
-                                >
-                                    <AccountCircle />
-                                </IconButton>
-                                <IconButton aria-label="Show 3 new notifications" color="inherit">
-                                    <Badge badgeContent={3} color="secondary">
-                                        <NotificationsIcon />
-                                    </Badge>
-                                </IconButton>
-                                <IconButton aria-label="Show 1 new mails" color="inherit">
-                                    <Badge badgeContent={1} color="secondary">
-                                        <MailIcon />
-                                    </Badge>
-                                </IconButton>
-                            </div>
-                            }
-                            {!props.isLogin &&
-                            <div>
-                                <Link to="/sign-up" className={classes.link}>
-                                    <Button variant="contained" className={classes.button}>
-                                        ثبت نام
-                                    </Button>
-                                </Link>
-                                <Link to="/sign-in" className={classes.link}>
-                                    <Button variant="contained" className={classes.button}>
-                                        ورود
-                                    </Button>
-                                </Link>
-                            </div>
-                            }
-                        </div>
-                        {/* more */}
-                        <div className={classes.sectionMobile}>
-                            <IconButton
-                                onClick={props.mobileMenuOpen}
-                                color="inherit"
-                            >
-                                <MoreIcon />
-                            </IconButton>
-                        </div>
-                        {/* search */}
-                        <div className={classes.search}>
-                            <div className={classes.searchIcon}>
-                                <SearchIcon />
-                            </div>
-                            <InputBase
-                                placeholder="جست و جو"
-                                classes={{
-                                    root : classes.inputRoot,
-                                    input: classes.inputInput,
-                                }}
-                                inputProps={{"aria-label": "Search"}}
-                            />
-                        </div>
-                        {/* gap */}
-                        <div className={classes.grow} />
-                        {/* site name */}
-                        <Link to={"/"} style={{color: "inherit", textDecoration: "none"}}>
-                            <Typography className={classes.title} variant="h6" noWrap>
-                                آموزشگاه رانندگی
-                            </Typography>
-                        </Link>
-                        {/* drawer */}
-                        {
-                            props.isLogin &&
-                            <IconButton
-                                onClick={props.toggleDrawer("right", true)}
-                                edge="start"
-                                className={classes.menuButton}
-                                color="inherit"
-                                aria-label="Open drawer"
-                            >
-                                <MenuIcon />
-                            </IconButton>
-                        }
-                    </Toolbar>
-                </AppBar>
-            </HideOnScroll>
             <NavBarMenu
                 anchorEl={props.mobileMenu}
                 anchorOrigin={{vertical: "bottom", horizontal: "center"}}
@@ -271,12 +181,66 @@ export default function Navbar({...props}) {
             >
                 <MenuItem onClick={props.logout} className={classes.menuItem}>خروج</MenuItem>
             </NavBarMenu>
-            {
-                props.isLogin &&
-                <Drawer right={props.right}
-                        username={props.username}
-                        toggleDrawer={(side, open) => props.toggleDrawer(side, open)} />
-            }
+            <HideOnScroll {...props}>
+                <AppBar className={classes.appbar}>
+                    <Toolbar>
+                        {/* user */}
+                        <div className={classes.sectionDesktop}>
+                            <div>
+                                <IconButton
+                                    color="inherit"
+                                    onClick={props.userMenuOpen}
+                                >
+                                    <AccountCircle />
+                                </IconButton>
+                                <IconButton aria-label="Show 3 new notifications" color="inherit">
+                                    <Badge badgeContent={3} color="secondary">
+                                        <NotificationsIcon />
+                                    </Badge>
+                                </IconButton>
+                                <IconButton aria-label="Show 1 new mails" color="inherit">
+                                    <Badge badgeContent={1} color="secondary">
+                                        <MailIcon />
+                                    </Badge>
+                                </IconButton>
+                            </div>
+                        </div>
+                        {/* more */}
+                        <div className={classes.sectionMobile}>
+                            <IconButton
+                                onClick={props.mobileMenuOpen}
+                                color="inherit"
+                            >
+                                <MoreIcon />
+                            </IconButton>
+                        </div>
+                        {/* search */}
+                        <div className={classes.search}>
+                            <div className={classes.searchIcon}>
+                                <SearchIcon />
+                            </div>
+                            <InputBase
+                                placeholder="جست و جو"
+                                classes={{
+                                    root : classes.inputRoot,
+                                    input: classes.inputInput,
+                                }}
+                                inputProps={{"aria-label": "Search"}}
+                            />
+                        </div>
+                        {/* gap */}
+                        <div className={classes.grow} />
+                        {/* site name */}
+                        <Link to={"/"} style={{color: "inherit", textDecoration: "none"}}>
+                            <Typography className={classes.title} variant="h6" noWrap>
+                                آموزشگاه رانندگی
+                            </Typography>
+                        </Link>
+                    </Toolbar>
+                </AppBar>
+            </HideOnScroll>
+            <Drawer right={props.right}
+                    username={props.username} />
         </div>
     );
 }

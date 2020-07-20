@@ -17,8 +17,3 @@ RETURN
 	SELECT imageable_id,name from images WHERE imageable_type = @type
 )
 GO
-
-
---------------------------------------------------
--- image function
---------------------------------------------------

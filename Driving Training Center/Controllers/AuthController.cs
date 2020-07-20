@@ -58,8 +58,8 @@ namespace Driving_Training_Center.Controllers
                 x => x.national_code == request.national_code
             );
 
-            if (user == null || !SecurePasswordHasher.Verify(request.password, user.password))
-                return BadRequest(new { message = "Username or password is incorrect" });
+            //if (user == null || !SecurePasswordHasher.Verify(request.password, user.password))
+                //return BadRequest(new { message = "Username or password is incorrect" });
 
             // authentication successful so generate jwt token
             var response = _authService.generateJwtToken(request.national_code);

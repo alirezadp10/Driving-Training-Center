@@ -65,14 +65,14 @@ namespace Driving_Training_Center.Controllers
                 return Unauthorized();
             }
 
-            var type = _context.payments.Include("License").Where(q => q.applicant_id == applicant.id).FirstOrDefault();
+            //var type = _context.payments.Include("License").Where(q => q.applicant_id == applicant.id).FirstOrDefault();
 
-            if (type == null)
-            {
-                return Unauthorized();
-            }
+            //if (type == null)
+            //{
+            //    return Unauthorized();
+            //}
 
-            return await _context.theory_exams.Where(q => q.license_type == type.License.name).ToListAsync();
+            return await _context.theory_exams.ToListAsync();
         }
 
         // GET: api/theory-exams/5

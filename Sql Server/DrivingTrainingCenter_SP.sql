@@ -6,44 +6,17 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 -- ================================================
--- first store procedure
+-- get applicants who payed by filter licnese type
 -- ================================================
-CREATE OR ALTER PROCEDURE spd_slider 
-	@id int
+CREATE OR ALTER PROCEDURE spd_question 
+	@type int
 AS
 BEGIN
 	SET NOCOUNT ON;
-	SELECT 
-		news.id,
-		news.title,
-		CONCAT('/images/md/' , images.name) AS image
-	FROM news
-	JOIN func_images(N'News') AS images on images.imageable_id = news.id
-	where news.slide = 1
-END
-GO
-
--- ================================================
--- first store procedure
--- ================================================
-CREATE OR ALTER PROCEDURE spd_foo 
-	@id int
-AS
-BEGIN
-	SET NOCOUNT ON;
-	SELECT * from applicants where id = @id;
-END
-GO
-
--- ================================================
--- secoend store procedure
--- ================================================
-CREATE OR ALTER PROCEDURE spd_bar 
-	@id int
-AS
-BEGIN
-	SET NOCOUNT ON;
-	SELECT * from applicants where id = @id;
+	select * from applicants 
+	join payments on payments.applicant_id = applicants.id
+	join licenses on licenses.id = payments.license_id
+	where payments.status = 'PAYED' AND licenses.name = @type
 END
 GO
 

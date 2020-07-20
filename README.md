@@ -1,6 +1,6 @@
 # Driving-Training-Center
 
-this project include front-end react application project that's located in ClientApp folder and asp.net core project that's located in DrivingTrainingCenter folder.
+this project include front-end react application project that's located in ClientApp folder and asp.net core project that's located in Driving Training Center folder.
 
 ## Client App
 for environments using [Node](https://nodejs.org/), the easiest way to handle this would be to install [serve](https://github.com/zeit/serve) and let it handle the rest:

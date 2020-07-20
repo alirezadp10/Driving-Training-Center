@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DataLayer;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Driving_Training_Center.Controllers
 {
@@ -22,13 +23,27 @@ namespace Driving_Training_Center.Controllers
 
         // GET: api/applicant-theory-exams
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<ApplicantTheoryExam>>> Getapplicant_theory_exams()
         {
-            return await _context.applicant_theory_exams.Include("Applicant").Include("TheoryExam").ToListAsync();
+            var identity = User.Identity as System.Security.Claims.ClaimsIdentity;
+            IEnumerable<System.Security.Claims.Claim> claims = identity.Claims;
+            var national_code = claims.Where(p => p.Type == "national_code").FirstOrDefault()?.Value;
+
+            var applicant = _context.applicants.Where(q => q.national_code == national_code).FirstOrDefault();
+
+            if (applicant == null)
+            {
+                return Unauthorized();
+            }
+
+
+            return await _context.applicant_theory_exams.Include("Applicant").Include("TheoryExam").Where(q=>q.applicant_id == applicant.id).ToListAsync();
         }
 
         // GET: api/applicant-theory-exams/5
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<ApplicantTheoryExam>> GetApplicantTheoryExam(int id)
         {
             var applicantTheoryExam = await _context.applicant_theory_exams.FindAsync(id);
@@ -45,6 +60,7 @@ namespace Driving_Training_Center.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> PutApplicantTheoryExam(int id, [FromForm] ApplicantTheoryExam applicantTheoryExam)
         {
             if (id != applicantTheoryExam.applicant_id)
@@ -78,9 +94,28 @@ namespace Driving_Training_Center.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<ApplicantTheoryExam>> PostApplicantTheoryExam([FromForm] ApplicantTheoryExam applicantTheoryExam)
+        [Authorize]
+        public async Task<ActionResult<ApplicantTheoryExam>> PostApplicantTheoryExam([FromForm] int exam_id)
         {
+            var identity = User.Identity as System.Security.Claims.ClaimsIdentity;
+            IEnumerable<System.Security.Claims.Claim> claims = identity.Claims;
+            var national_code = claims.Where(p => p.Type == "national_code").FirstOrDefault()?.Value;
+
+            var applicant = _context.applicants.Where(q => q.national_code == national_code).FirstOrDefault();
+
+            if (applicant == null)
+            {
+                return Unauthorized();
+            }
+
+            var applicantTheoryExam = new ApplicantTheoryExam
+            {
+                applicant_id = applicant.id,
+                theory_exam_id = exam_id
+            };
+
             _context.applicant_theory_exams.Add(applicantTheoryExam);
+
             try
             {
                 await _context.SaveChangesAsync();
@@ -102,6 +137,7 @@ namespace Driving_Training_Center.Controllers
 
         // DELETE: api/applicant-theory-exams/5
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<ActionResult<ApplicantTheoryExam>> DeleteApplicantTheoryExam(int id)
         {
             var applicantTheoryExam = await _context.applicant_theory_exams.FindAsync(id);

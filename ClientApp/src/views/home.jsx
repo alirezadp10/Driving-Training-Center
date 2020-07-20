@@ -64,7 +64,7 @@ class Payment extends React.Component {
                                 </Grid>
                                 <Grid item sm={3}>
                                     <Link
-                                        to={this.state.haveFunctionalCourse ? "/functional-course" : "/functional-course-create"}
+                                        to={localStorage["foo"] ? "/functional-course" : "functional-course-create"}
                                         style={{color: "inherit", textDecoration: "none"}}>
                                         <Card className={`p-3 cursor-pointer hover`}>
                                             <img alt={"آموزش عملی"}

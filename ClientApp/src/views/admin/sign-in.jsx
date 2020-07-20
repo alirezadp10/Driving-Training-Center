@@ -163,13 +163,13 @@ class App extends React.Component {
                     });
                 }
                 if (status === 200) {
-                    this.props.authorization({
-                        status: "authorized",
-                    });
                     localStorage["access_token"] = jsonData.access_token;
                     localStorage["expires_in"] = Math.floor(Date.now() / 1000) + jsonData.expires_in;
                     localStorage["token_type"] = jsonData.token_type;
                     localStorage["user"] = JSON.stringify(jsonData.user);
+                    this.props.authorization({
+                        status: "authorized",
+                    });
                     this.props.setUserInfo(jsonData.user);
                 }
             });

@@ -10,7 +10,7 @@ const useStyles = makeStyles((theme) => ({
         justifyContent : "center",
         alignItems     : "center",
         textAlign      : "-webkit-center",
-        padding        : "5px 20px",
+        padding        : "5px 40px",
     },
     avatar     : {
         top   : theme.spacing(1),

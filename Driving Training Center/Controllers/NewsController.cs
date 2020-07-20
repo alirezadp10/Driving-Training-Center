@@ -30,8 +30,7 @@ namespace Driving_Training_Center.Controllers
 
         public int?[] categories { get; set; }
     }
-
-
+    
     [Route("api/[controller]")]
     [ApiController]
     public class NewsController : ControllerBase
@@ -47,16 +46,7 @@ namespace Driving_Training_Center.Controllers
         [HttpGet("slider")]
         public async Task<ActionResult<IEnumerable<News>>> Slider()
         {
-            var news = _context.news.Include("Staff").ToList()
-                            .Join(_context.images.Where(i => i.imageable_type == "News"), n => n.id, i => i.imageable_id, (n, i) => new { news = n, image = i })
-                            .Where(q => q.news.slide == true)
-                            .AsEnumerable()
-                            .Select(q => new
-                            {
-                                id = q.news.id,
-                                title = q.news.title,
-                                image = Path.Combine("/images/md/", q.image.name)
-                            });
+            var news = _context.Set<sliderView>().FromSqlRaw("select * from [Slider View]");
 
             if (news == null)
             {

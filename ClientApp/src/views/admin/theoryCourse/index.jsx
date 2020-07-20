@@ -101,7 +101,7 @@ export default class App extends React.Component {
                                                         {item.title}
                                                     </TableCell>
                                                     <TableCell className={`t-center f-small`}>
-                                                        {item.license_type}
+                                                        {item.type}
                                                     </TableCell>
                                                     <TableCell className={`t-center f-small`}>
                                                         <a href={BASE_URL + item.image}>

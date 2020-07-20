@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Driving_Training_Center;
+using Microsoft.EntityFrameworkCore;
 
 namespace DataLayer
 {
@@ -30,6 +31,8 @@ namespace DataLayer
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<sliderView>().HasNoKey().ToView(null);
+
             modelBuilder.Entity<SchedulePracticalCourse>()
                 .HasOne(x => x.Schedule)
                 .WithMany(m => m.PracticalCourses)

@@ -1,3 +1,7 @@
+use DrivingTrainingCenter;
+--------------------------------------------------
+-- image function
+--------------------------------------------------
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -13,3 +17,8 @@ RETURN
 	SELECT imageable_id,name from images WHERE imageable_type = @type
 )
 GO
+
+
+--------------------------------------------------
+-- image function
+--------------------------------------------------

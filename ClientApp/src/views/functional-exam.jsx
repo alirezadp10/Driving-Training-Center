@@ -20,7 +20,7 @@ export default class FunctionalCourse extends React.Component {
             <Layout>
                 <Helmet>
                     <meta charSet="utf-8" />
-                    <title>جدول کلاس های عملی</title>
+                    <title>آزمون عملی</title>
                 </Helmet>
                 <RTLContainer>
                     <Grid container direction="row" justify="center" alignItems="center">

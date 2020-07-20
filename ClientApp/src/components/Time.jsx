@@ -8,12 +8,12 @@ import Checkbox from "@material-ui/core/Checkbox";
 import InputLabel from "@material-ui/core/InputLabel";
 
 const names = [
-    "08-10",
-    "10-12",
-    "12-14",
-    "14-16",
-    "16-18",
-    "18-20",
+    "08:00-10:00",
+    "10:00-12:00",
+    "12:00-14:00",
+    "14:00-16:00",
+    "16:00-18:00",
+    "18:00-20:00",
 ];
 
 export default class MultipleSelect extends React.Component {

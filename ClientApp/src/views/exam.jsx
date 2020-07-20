@@ -13,57 +13,42 @@ import {
 import RTLContainer from "../components/RTLContainer";
 import Pagination from "@material-ui/lab/Pagination";
 import Layout from "./layouts/app";
-import {Helmet} from "react-helmet";
+import { Helmet } from "react-helmet";
 import moment from "moment";
+import { BASE_URL } from "../constants/app";
+import { Redirect } from "react-router-dom";
 
 export default class Exam extends React.Component {
-
     constructor(props) {
         super(props);
-        this.state        = {
-            pagination  : 1,
+        this.state = {
+            registered: false,
+            pageId: 0,
+            pagination: 1,
             isAuthorized: false,
-            sending     : false,
-            questions   : [
-                {
-                    id     : 1,
-                    title  : "هنرجوی گرامی حق تقدم عبور را در تقاطع شکل زیر به ترتیب مشخص کنید.",
-                    image  : require("../assets/images/image01.jpg"),
-                    options: [
-                        "سبز – زرد – نارنجی – آبی",
-                        "زرد – سبز – آبی – نارنجی",
-                        "آبی – سبز – نارنجی – زرد",
-                        "سبز – زرد – آبی - نارنجی",
-                    ],
-                },
-                {
-                    id     : 2,
-                    title  : "هنرجوی گرام حق تقدم عبور را در تقاطع شکل زیر به ترتیب مشخص کنید.",
-                    image  : require("../assets/images/image02.jpg"),
-                    options: [
-                        "سبز – زرد – آبی - نارنجی",
-                        "زرد – سبز – آبی – نارنجی",
-                        "سبز – زرد – نارنجی – آبی",
-                        "آبی – سبز – نارنجی – زرد",
-                    ],
-                },
-            ],
-            timer       : 600,
-            answers     : [],
+            sending: false,
+            exam: {},
+            answers: [],
         };
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.answerList   = this.answerList.bind(this);
+        this.answerList = this.answerList.bind(this);
     }
 
     handleChange = name => (event, value) => {
         this.setState({
             [name]: value,
         });
+
+        if (name === "pagination") {
+            this.setState({
+                pageId: this.state.exam.questions[value - 1].id,
+            });
+        }
     };
 
     answerList = name => (event, value) => {
-        let answers       = this.state.answers;
-        answers[name - 1] = value;
+        let answers = this.state.answers;
+        answers[name] = value;
         this.setState({
             answers: answers,
         });
@@ -71,11 +56,62 @@ export default class Exam extends React.Component {
 
     handleSubmit(event) {
         event.preventDefault();
+        this.setState({
+            "sending": true,
+        });
+        
+        let status;
+        let formData = new FormData();
+        formData.append("theory_exam_id", this.props.match.params.id);
+        this.state.answers.forEach(function (value, key) {
+            formData.append(`answers[${key}]`, value);
+        })
+        let authorization = localStorage.getItem("token_type") + " " + localStorage.getItem("access_token");
+        fetch(BASE_URL + "/api/theory-exams/correction", {
+            method: "POST",
+            body: formData,
+            headers: {
+                "Accept": "application/json",
+                "Authorization": authorization,
+            },
+        })
+            .then(response => {
+                status = response.status;
+                return response.json();
+            })
+            .then(jsonData => {
+                this.setState({
+                    "sending": false,
+                });
+                if (status === 200) {
+                    this.setState({
+                        "registered": true,
+                    });
+                }
+            });
     }
 
     componentDidMount() {
+        let authorization = localStorage.getItem("token_type") + " " + localStorage.getItem("access_token");
+        fetch(`${BASE_URL}/api/theory-exams/${this.props.match.params.id}`, {
+            method: "GET",
+            headers: {
+                "Accept": "application/json",
+                "Authorization": authorization,
+            },
+        }).then(response => {
+            return response.json();
+        }).then(jsonData => {
+            this.setState({
+                exam: jsonData,
+                pageId: jsonData.questions[0].id
+            });
+            this.state.exam.time = this.state.exam.time * 60
+            this.forceUpdate();
+        });
+
         const intervalId = setInterval(() => this.updateTimer(), 2000);
-        this.setState({intervalId});
+        this.setState({ intervalId });
     }
 
     componentWillUnmount() {
@@ -83,12 +119,18 @@ export default class Exam extends React.Component {
     }
 
     updateTimer() {
-        this.setState({
-            timer: this.state.timer - 1,
-        });
+        this.state.exam.time = this.state.exam.time - 1
+        this.forceUpdate()
+        if (this.state.exam.time == 0) {
+            this.handleSubmit()
+        }
     }
 
     render() {
+        if (this.state.registered) {
+            return <Redirect to="/theory-exam" />;
+        }
+
         return (
             <Layout>
                 <Helmet>
@@ -101,29 +143,33 @@ export default class Exam extends React.Component {
                             <Card className={`pb-4 pt-4 pl-4 pr-4`}>
                                 <Grid container spacing={1}>
                                     <form onSubmit={this.handleSubmit}>
-                                        <Question question={this.state.questions[this.state.pagination - 1]}
-                                                  selectedValue={this.state.answers[this.state.pagination - 1]}
-                                                  handleChange={this.answerList} />
-                                        <Grid item sm={12}>
-                                            <Pagination count={this.state.questions.length}
+                                        {Object.keys(this.state.exam).length !== 0 && (
+                                            <div>
+                                                <Question question={this.state.exam.questions[this.state.pagination - 1]}
+                                                    selectedValue={this.state.answers[this.state.pageId]}
+                                                    handleChange={this.answerList} />
+                                                <Grid item sm={12}>
+                                                    <Pagination count={this.state.exam.questions.length}
                                                         className={`center mt-4`}
                                                         page={this.state.pagination}
                                                         onChange={this.handleChange("pagination")} />
-                                        </Grid>
-                                        <Button type="submit"
-                                                disabled={this.state.sending}
-                                                size={"large"}
-                                                variant="contained"
-                                                color="secondary"
-                                                className={`mt-3 f-bolder`}>
-                                            پایان آزمون
-                                        </Button>
-                                        <Button size={"large"}
-                                                variant="contained"
-                                                color="secondary"
-                                                className={`mt-3 f-bolder left`}>
-                                            {moment.utc(this.state.timer * 1000).format("HH:mm:ss")}
-                                        </Button>
+                                                </Grid>
+                                                <Button type="submit"
+                                                    disabled={this.state.sending}
+                                                    size={"large"}
+                                                    variant="contained"
+                                                    color="secondary"
+                                                    className={`mt-3 f-bolder`}>
+                                                    پایان آزمون
+                                                </Button>
+                                                <Button size={"large"}
+                                                    variant="contained"
+                                                    color="secondary"
+                                                    className={`mt-3 f-bolder left`}>
+                                                    {moment.utc(this.state.exam.time * 1000).format("HH:mm:ss")}
+                                                </Button>
+                                            </div>
+                                        )}
                                     </form>
                                 </Grid>
                             </Card>
@@ -147,9 +193,9 @@ class Question extends React.Component {
                             </Typography>
                         </Grid>
                         <Grid item sm={4}>
-                            <img src={this.props.question.image}
-                                 width={"100%"}
-                                 alt={this.props.question.title} />
+                            <img src={BASE_URL + this.props.question.image}
+                                width={"100%"}
+                                alt={this.props.question.title} />
                         </Grid>
                     </Grid>
                 </Grid>
@@ -159,14 +205,14 @@ class Question extends React.Component {
                             <Grid item sm={7}>
                                 <FormControl component="fieldset">
                                     <RadioGroup aria-label={this.props.question.id}
-                                                value={parseInt(this.props.selectedValue)}
-                                                name={`question-${this.props.question.id}`}
-                                                onChange={this.props.handleChange(this.props.question.id)}>
-                                        {this.props.question.options.map(function (item, key) {
+                                        value={parseInt(this.props.selectedValue)}
+                                        name={`question-${this.props.question.id}`}
+                                        onChange={this.props.handleChange(this.props.question.id)}>
+                                        {JSON.parse(this.props.question.options).map(function (item, key) {
                                             return <FormControlLabel key={Math.random()}
-                                                                     value={key + 1}
-                                                                     control={<Radio />}
-                                                                     label={item} />;
+                                                value={key + 1}
+                                                control={<Radio />}
+                                                label={item} />;
                                         })}
                                     </RadioGroup>
                                 </FormControl>

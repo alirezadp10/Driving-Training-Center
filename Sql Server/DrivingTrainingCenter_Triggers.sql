@@ -1,7 +1,7 @@
+USE DrivingTrainingCenter
 --====================================
 -- foo trigger
 --====================================
-USE DrivingTrainingCenter
 GO
 
 CREATE TRIGGER trg_foo 

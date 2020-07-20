@@ -69,7 +69,7 @@ export default function Drawer({...props}) {
                             },
                             {
                                 "text": "آموزش عملی",
-                                "path": "/functional-course",
+                                "path": localStorage["foo"] ? "/functional-course" : "functional-course-create",
                                 "icon": <FontAwesomeIcon className={`${classes.icon} mr-1`}
                                                          icon={faIdCard} />,
                             },

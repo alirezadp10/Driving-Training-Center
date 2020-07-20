@@ -9,6 +9,14 @@ using DataLayer;
 
 namespace Driving_Training_Center.Controllers
 {
+    public class PracticalCourseRequest
+    {
+        public int teacher_id { get; set; }
+        public int schedule_id { get; set; }
+    }
+
+
+
     [Route("api/Practical-Courses")]
     [ApiController]
     public class PracticalCoursesController : ControllerBase
@@ -78,12 +86,45 @@ namespace Driving_Training_Center.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<PracticalCourse>> PostPracticalCourse([FromForm] PracticalCourse practicalCourse)
+        [Microsoft.AspNetCore.Authorization.Authorize]
+        public async Task<ActionResult<PracticalCourse>> PostPracticalCourse([FromForm] PracticalCourseRequest practicalCourse)
         {
-            _context.practical_courses.Add(practicalCourse);
+            var identity = User.Identity as System.Security.Claims.ClaimsIdentity;
+            IEnumerable<System.Security.Claims.Claim> claims = identity.Claims;
+            var national_code = claims.Where(p => p.Type == "national_code").FirstOrDefault()?.Value;
+
+            var applicant = _context.applicants.Where(q => q.national_code == national_code).FirstOrDefault();
+
+            if (applicant == null)
+            {
+                return Unauthorized();
+            }
+
+
+            var course = new PracticalCourse
+            {
+                teacher_id = practicalCourse.teacher_id,
+                applicant_id = applicant.id,
+                start_date = DateTime.Now,
+                license_type = "پایه ۳",
+                total_sessions = 10
+            };
+
+            _context.practical_courses.Add(course);
+
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetPracticalCourse", new { id = practicalCourse.id }, practicalCourse);
+            var schedule = new SchedulePracticalCourse
+            {
+                schedule_id = practicalCourse.schedule_id,
+                practical_course_id = course.id
+            };
+
+            _context.schedule_practical_courses.Add(schedule);
+
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetPracticalCourse", new { id = course.id }, course);
         }
 
         // DELETE: api/PracticalCourses/5

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using DataLayer;
 using Driving_Training_Center.Helpers;
 using Microsoft.AspNetCore.Authorization;
-
+using System.Collections;
 namespace Driving_Training_Center.Controllers
 {
     [Route("api/Theory-Courses")]
@@ -22,20 +22,23 @@ namespace Driving_Training_Center.Controllers
             _context = context;
         }
 
-        // GET: api/TheoryCourses
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<TheoryCourse>>> Gettheory_courses()
+        // GET: api/theory-courses/lessons
+        [HttpGet("lessons")]
+        public async Task<ActionResult<IEnumerable>> theoryCoursesLessons()
         {
             var courses = _context.theory_courses.Include("Staff").ToList()
                             .Join(_context.images.Where(i => i.imageable_type == "TheoryCourse"), n => n.id, i => i.imageable_id, (n, i) => new { course = n, image = i })
-                            .GroupBy(q => q.course.id)
+                            .Join(_context.lessons, n => n.course.id, i => i.theory_course_id, (n, i) => new { course = n, lesson = i })
+                            .GroupBy(q => q.course.course.id)
                             .Select(q => new
                             {
                                 id = q.Key,
-                                license_type = q.Select(q => q.course.license_type).First(),
-                                title = q.Select(q => q.course.title).First(),
-                                image = System.IO.Path.Combine("/Images/lg/", q.Select(q => q.image.name).First()),
+                                type = q.Select(q => q.course.course.license_type).First(),
+                                title = q.Select(q => q.course.course.title).First(),
+                                image = System.IO.Path.Combine("/Images/lg/", q.Select(q => q.course.image.name).First()),
+                                lessons = q.Select(q => q.lesson)
                             });
+
 
             //var response = new Dictionary<string, List<dynamic>>();
 
@@ -69,6 +72,24 @@ namespace Driving_Training_Center.Controllers
             //response.Add("پایه 3", paye3);
             //response.Add("موتورسیکلت", motorcycle);
 
+
+
+            return Ok(courses);
+        }
+
+        // GET: api/TheoryCourses
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<TheoryCourse>>> Gettheory_courses()
+        {
+            var courses = _context.theory_courses.Include("Staff").ToList()
+                            .Join(_context.images.Where(i => i.imageable_type == "TheoryCourse"), n => n.id, i => i.imageable_id, (n, i) => new { course = n, image = i })
+                            .Select(q => new
+                            {
+                                id = q.course.id,
+                                type = q.course.license_type,
+                                title = q.course.title,
+                                image = System.IO.Path.Combine("/Images/lg/", q.image.name),
+                            });
             return Ok(courses);
         }
 
@@ -161,6 +182,8 @@ namespace Driving_Training_Center.Controllers
             }
 
             theoryCourse.staff_id = staff.id;
+
+            _context.theory_courses.Add(theoryCourse);
 
             await _context.SaveChangesAsync();
 

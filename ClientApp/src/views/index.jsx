@@ -79,6 +79,8 @@ export default class App extends React.Component {
                 </Helmet>
                 <React.Fragment>
                     <Container component="div" maxWidth="lg" style={{marginTop: "100px"}}>
+                        <Typography variant={"h4"} className={`center bg-white p-3 mb-4`}>علیرضا گودرزی - 946127026 - درس پیاده سازی پایگاه داده</Typography>
+
                         <Grid container spacing={2}>
                             <Grid item xs={3}>
                                 <Contact />

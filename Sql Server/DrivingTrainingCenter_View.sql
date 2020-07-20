@@ -1,6 +1,19 @@
 use DrivingTrainingCenter;
 GO
 -- =============================================
+-- Slider View
+-- =============================================
+CREATE OR ALTER VIEW [Slider View] AS
+--SELECT * FROM news;
+SELECT 
+	news.id,
+	news.title,
+	CONCAT('/images/md/' , images.name) AS image
+FROM news
+JOIN func_images(N'News') AS images on images.imageable_id = news.id
+GO
+
+-- =============================================
 -- Lessons View
 -- =============================================
 CREATE OR ALTER VIEW [Lessons List] AS

@@ -120,8 +120,8 @@ class Layout extends React.Component {
     };
 
     render() {
-        if (!JSON.parse(localStorage.getItem("user")).role) {
-            return <Redirect to="/" />;
+        if (localStorage.getItem("user") === null || !JSON.parse(localStorage.getItem("user")).role) {
+            return <Redirect to="/admin/sign-in" />;
         }
 
         return (

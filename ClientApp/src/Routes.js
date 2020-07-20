@@ -237,7 +237,7 @@ export default [
         component: Theory,
     },
     {
-        path     : "/exam",
+        path     : "/exam/:id",
         exact    : true,
         component: Exam,
     },

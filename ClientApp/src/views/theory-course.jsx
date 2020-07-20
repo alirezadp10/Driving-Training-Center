@@ -9,7 +9,7 @@ import { BASE_URL } from "../constants/app";
 export default class TheoryCourse extends React.Component {
 
     componentDidMount() {
-        fetch(`${BASE_URL}/api/theory-courses`, {
+        fetch(`${BASE_URL}/api/theory-courses/lessons`, {
             method : "GET",
             headers: {
                 "Accept" : "application/json",
